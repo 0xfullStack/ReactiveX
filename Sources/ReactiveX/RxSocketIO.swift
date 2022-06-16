@@ -15,6 +15,8 @@ public class SocketIOProxy {
     fileprivate let subject = PublishSubject<SocketClientEvent>()
     private let manager: SocketManager
     private let namespace: String
+    private let payload: [String: Any]?
+    
     var client: SocketIOClient {
         manager.socket(forNamespace: namespace)
     }
@@ -22,20 +24,25 @@ public class SocketIOProxy {
     public init(manager: SocketManager, namespace: String, payload: [String: Any]? = nil) {
         self.manager = manager
         self.namespace = namespace
+        self.payload = payload
         
-        self.client.on(clientEvent: .connect) { [weak self] data, ack in
+        client.on(clientEvent: .connect) { [weak self] data, ack in
             guard let self = self else { return }
             self.subject.onNext(.connect)
         }
-        self.client.on(clientEvent: .disconnect) { [weak self] data, ack in
+        client.on(clientEvent: .disconnect) { [weak self] data, ack in
             guard let self = self else { return }
             self.subject.onNext(.disconnect)
         }
-        self.client.on(clientEvent: .error) { [weak self] data, ack in
+        client.on(clientEvent: .error) { [weak self] data, ack in
             guard let self = self else { return }
             self.subject.onNext(.error)
         }
-        self.client.connect(withPayload: payload)
+        connectIfNeed()
+    }
+    
+    public func connectIfNeed() {
+        client.connect(withPayload: payload)
     }
     
     deinit {
