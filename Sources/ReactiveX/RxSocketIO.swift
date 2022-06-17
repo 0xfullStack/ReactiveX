@@ -45,6 +45,10 @@ public class SocketIOProxy {
         client.connect(withPayload: payload)
     }
     
+    public func disconnected() {
+        client.disconnect()
+    }
+    
     deinit {
         subject.onCompleted()
     }
