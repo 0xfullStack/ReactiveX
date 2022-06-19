@@ -38,7 +38,6 @@ public class SocketIOProxy {
             guard let self = self else { return }
             self.subject.onNext(.error)
         }
-        connectIfNeed()
     }
     
     public func connectIfNeed() {
