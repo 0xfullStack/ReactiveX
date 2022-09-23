@@ -21,7 +21,7 @@ public class SocketIOProxy {
         manager.socket(forNamespace: namespace)
     }
     
-    var connected: Bool {
+    public var connected: Bool {
         if let value = try? subject.value() {
             return value == .connect
         } else {
