@@ -12,13 +12,21 @@ import RxCocoa
 
 public class SocketIOProxy {
     
-    fileprivate let subject = PublishSubject<SocketClientEvent>()
+    fileprivate let subject = BehaviorSubject<SocketClientEvent>(value: .disconnect)
     private let manager: SocketManager
     private let namespace: String
     private let payload: [String: Any]?
     
     var client: SocketIOClient {
         manager.socket(forNamespace: namespace)
+    }
+    
+    var connected: Bool {
+        if let value = try? subject.value() {
+            return value == .connect
+        } else {
+            return false
+        }
     }
     
     public init(manager: SocketManager, namespace: String, payload: [String: Any]? = nil) {
