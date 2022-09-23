@@ -16,25 +16,13 @@ extension WebSocket: HasDelegate {
 
 public class RxWebSocketDelegateProxy: DelegateProxy<WebSocket, WebSocketDelegate>, DelegateProxyType, WebSocketDelegate {
     
-    fileprivate let subject = BehaviorSubject<WebSocketEvent>(value: .disconnected("", .zero))
+    fileprivate let subject = PublishSubject<WebSocketEvent>()
     
     public init(webSocket: ParentObject) {
         super.init(
             parentObject: webSocket,
             delegateProxy: RxWebSocketDelegateProxy.self
         )
-    }
-    
-    public var connected: Bool {
-        if let value = try? subject.value() {
-            switch value {
-            case .connected: return true
-            case .viabilityChanged(let isViable): return isViable
-            default: return false
-            }
-        } else {
-            return false
-        }
     }
     
     public static func registerKnownImplementations() {
